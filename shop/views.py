@@ -21,9 +21,9 @@ def get_filter_options(request):
 @staff_member_required
 def get_sales_chart(request, year):
     purchases = Purchase.objects.filter(time__year=year)
-    grouped_purchases = purchases.annotate(price=F("item_price")).annotate(
+    grouped_purchases = purchases.annotate(price=F("item__price")).annotate(
         month=ExtractMonth("time")).values("month").annotate(
-        average=Sum("item_price")).values("month", "average").order_by('month')
+        average=Sum("item__price")).values("month", "average").order_by('month')
 
     sales_dict = get_year_dict()
 
@@ -47,7 +47,7 @@ def get_sales_chart(request, year):
 @staff_member_required
 def spend_per_customer_chart(request, year):
     purchases = Purchase.objects.filter(time__year=year)
-    grouped_purchases = purchases.annotate(price=F("item_price")).annotate(
+    grouped_purchases = purchases.annotate(price=F("item__price")).annotate(
         month=ExtractMonth("time")).values("month").annotate(
         average=Avg("item__price")).values("month", "average").order_by("month")
 
@@ -114,3 +114,6 @@ def payment_method_chart(request, year):
         }
     })
       
+@staff_member_required
+def statistics_view(request):
+    return render(request, 'shop/statistics.html',{} )
